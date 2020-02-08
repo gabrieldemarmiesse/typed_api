@@ -1,3 +1,4 @@
+from typing import List
 from types import ModuleType
 import inspect
 
@@ -17,7 +18,7 @@ HELP_MESSAGE = (
 
 
 def ensure_api_is_typed(
-    objects_to_check: list,
+    modules_to_check: List[ModuleType],
     exception_list: list,
     init_only: bool = False,
     additional_message: str = "",
@@ -26,24 +27,22 @@ def ensure_api_is_typed(
         raise NotImplementedError(
             "The code to check other methods than __init__ is not implemented yet."
         )
-    api = API(objects_to_check, exception_list, additional_message)
+    api = API(modules_to_check, exception_list, additional_message)
     api.check()
 
 
 class API:
-    def __init__(self, objects_to_check, exception_list, additional_message):
-        self.objects_to_check = objects_to_check
+    def __init__(self, modules_to_check, exception_list, additional_message):
+        self.modules_to_check = modules_to_check
         self.exception_list = exception_list
         self.additional_message = additional_message
 
     def check(self):
-        for object_ in self.objects_to_check:
-            self.check_api_of_object(object_)
+        for module in self.modules_to_check:
+            for attribute in get_attributes(module):
+                self.check_api_of_object(attribute)
 
     def check_api_of_object(self, object_):
-        if isinstance(object_, ModuleType):
-            for attribute in get_attributes(object_):
-                self.check_api_of_object(attribute)
         if inspect.isclass(object_):
             self.check_function_is_typed(object_.__init__, class_=object_)
         if inspect.isfunction(object_):
@@ -68,9 +67,9 @@ def check_function_is_typed(func, class_, additional_message):
         if parameter_name in ("args", "kwargs", "self"):
             continue
         if class_ is None:
-            function_name = func.__name__
+            function_name = f"{func.__module__}.{func.__name__}"
         else:
-            function_name = class_.__name__ + ".__init__"
+            function_name = f"{func.__module__}.{class_.__name__}.__init__"
         raise NotTypedError(
             f"The function '{function_name}' has not complete type annotations "
             f"in its signature (it's missing the type hint for '{parameter_name}'). "
@@ -88,6 +87,8 @@ def check_function_is_typed(func, class_, additional_message):
 
 def get_attributes(module):
     for attr_name in dir(module):
+        if attr_name.startswith('_'):
+            continue
         attr = getattr(module, attr_name)
         yield attr
 
