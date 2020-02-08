@@ -1,6 +1,6 @@
 import pytest
 
-from typedapi import ensure_api_is_typed, NotTypedError
+from typedapi.functions import API, NotTypedError
 
 
 ADDITIONAL_MSG = "The evil rabbit"
@@ -11,14 +11,14 @@ def dodo(dummy_arg_1: int, dummy_arg_2) -> float:
 
 
 def test_ensure_api_is_typed_func_1():
-    ensure_api_is_typed([dodo], [dodo], init_only=True)
+    api = API([], [dodo], '')
+    api.check_api_of_object(dodo)
 
 
 def test_ensure_api_is_typed_func_2():
     with pytest.raises(NotTypedError) as excinfo:
-        ensure_api_is_typed(
-            [dodo], [], init_only=True, additional_message=ADDITIONAL_MSG
-        )
+        api = API([], [], additional_message=ADDITIONAL_MSG)
+        api.check_api_of_object(dodo)
 
     error_msg = str(excinfo.value)
     assert "dodo" in error_msg
@@ -35,10 +35,8 @@ def dudo(dummy_arg_1: int, dummy_arg_2: str):
 
 def test_ensure_api_is_typed_func_3():
     with pytest.raises(NotTypedError) as excinfo:
-        ensure_api_is_typed(
-            [dudo], [], init_only=True, additional_message=ADDITIONAL_MSG
-        )
-
+        api = API([], [], additional_message=ADDITIONAL_MSG)
+        api.check_api_of_object(dudo)
     error_msg = str(excinfo.value)
     assert "return type" in error_msg
     assert ADDITIONAL_MSG in error_msg
@@ -52,8 +50,8 @@ def gru(dummy_arg_1: int, dummy_arg_2: str) -> float:
 
 
 def test_ensure_api_is_typed_func_all_typed():
-    ensure_api_is_typed([gru], [], init_only=True)
-
+    api = API([], [], '')
+    api.check_api_of_object(gru)
 
 class Dada:
     def __init__(self, a: int):
@@ -61,7 +59,8 @@ class Dada:
 
 
 def test_ensure_api_is_typed_class_1():
-    ensure_api_is_typed([Dada], [], init_only=True)
+    api = API([], [], "")
+    api.check_api_of_object(Dada)
 
 
 class Dudu:
@@ -71,9 +70,8 @@ class Dudu:
 
 def test_ensure_api_is_typed_class_2():
     with pytest.raises(NotTypedError) as excinfo:
-        ensure_api_is_typed(
-            [Dudu], [], init_only=True, additional_message=ADDITIONAL_MSG
-        )
+        api = API([], [], ADDITIONAL_MSG)
+        api.check_api_of_object(Dudu)
 
     error_msg = str(excinfo.value)
     assert "Dudu.__init__" in error_msg
