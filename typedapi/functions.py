@@ -4,14 +4,25 @@ import inspect
 
 TUTORIAL_URL = "https://docs.python.org/3/library/typing.html"
 
+HELP_MESSAGE = (
+    f"We would like this functions to be typed."
+    f"If you are not familiar with adding type hints in "
+    f"functions, you can look at functions already typed in"
+    f"the codebase. \n"
+    f"If you don't want to type your function, you can add it "
+    f"to the TODO list of functions to type (also known as exception_list)."
+    f"You can also look at this tutorial: "
+    f"{TUTORIAL_URL}.\n"
+)
+
 
 def ensure_api_is_typed(
     objects_to_check: list,
     exception_list: list,
-    only_init: bool = False,
+    init_only: bool = False,
     additional_message: str = "",
 ):
-    if not only_init:
+    if not init_only:
         raise NotImplementedError(
             "The code to check other methods than __init__ is not implemented yet."
         )
@@ -63,22 +74,15 @@ def check_function_is_typed(func, class_, additional_message):
         raise NotTypedError(
             f"The function '{function_name}' has not complete type annotations "
             f"in its signature (it's missing the type hint for '{parameter_name}'). "
-            f"We would like this functions to be typed."
-            f"If you are not familiar with adding type hints in "
-            f"functions, you can look at functions already typed in"
-            f"the codebase. \n"
-            f"If you don't want to type your function, you can add it "
-            f"to the TODO list of functions to type (also known as exception_list)."
-            f"You can also look at this tutorial: "
-            f"{TUTORIAL_URL}.\n"
-            f"{additional_message}"
+            f"{HELP_MESSAGE} \n{additional_message}"
         )
 
     if class_ is None:
         if signature.return_annotation != inspect.Signature.empty:
             return
         raise NotTypedError(
-            f"The function {func.__name__} has no return type. Please add one."
+            f"The function {func.__name__} has no return type. Please add one. \n"
+            f"{HELP_MESSAGE} \n{additional_message}"
         )
 
 
