@@ -67,6 +67,8 @@ def check_function_is_typed(func, class_, additional_message):
             f"If you are not familiar with adding type hints in "
             f"functions, you can look at functions already typed in"
             f"the codebase. \n"
+            f"If you don't want to type your function, you can add it "
+            f"to the TODO list of functions to type (also known as exception_list)."
             f"You can also look at this tutorial: "
             f"{TUTORIAL_URL}.\n"
             f"{additional_message}"
