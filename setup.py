@@ -29,7 +29,7 @@ from setuptools import setup
 
 setup(
     name="typedapi",
-    version="0.1.0",
+    version="0.2.0",
     author="Gabriel de Marmiesse",
     author_email="gabrieldemarmiesse@gmail.com",
     packages=find_packages(),
