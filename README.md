@@ -1,5 +1,9 @@
 # typedapi
 
+```bash
+pip install typedapi
+```
+
 Typedapi is used when you want to gradually add types hints to your public API and you want to 
 be able to track you progress and what's left to do.
 
